@@ -21,9 +21,13 @@ function Context() {
  * Add a context level, optionally passing
  * a value to start with.
  *
- * @param {String} `type`
- * @param {Number} `level`
- * @param {Object} `value`
+ * ```js
+ * context.add('locals', {a: 'b'});
+ * ```
+ *
+ * @param {String} `type` The kind of context to add.
+ * @param {Number} `level` Numerical value representing the order in which this level should be merged versus other levels.
+ * @param {Object} `value` Optionally pass a starting object.
  */
 
 Context.prototype.add = function (type, level, value) {

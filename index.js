@@ -3,10 +3,19 @@
 var _ = require('lodash');
 
 
+
+/**
+ * Create an instance of `Context`.
+ *
+ * @class `Context`
+ * @api public
+ */
+
 function Context() {
   this.ctx = {};
   this.levels = {};
 }
+
 
 /**
  * Add a context level, optionally passing
@@ -20,16 +29,6 @@ function Context() {
 Context.prototype.add = function (type, level, value) {
   this.levels[type] = level;
   this.ctx[type] = value || {};
-  return this;
-};
-
-
-/**
- * Add a context namespace.
- */
-
-Context.prototype.namespace = function () {
-
   return this;
 };
 
@@ -113,6 +112,23 @@ Context.prototype.extend = function (type, value) {
 
 
 /**
+ * Extend the context.
+ *
+ * @api public
+ */
+
+Context.prototype.extend = function (type, value) {
+  if(this.ctx.hasOwnProperty(type)) {
+    this.levels[type] === 999;
+    this.ctx[type] === {};
+  }
+
+  this.ctx[type] = _.extend({}, this.ctx[type], value);
+  return this;
+};
+
+
+/**
  * Calculate the context
  *
  * @api public
@@ -144,6 +160,17 @@ Context.prototype.calculate = function (keys) {
     _.extend(o, value);
   }.bind(this));
   return o;
+};
+
+
+/**
+ * Remove a context.
+ *
+ * @api public
+ */
+
+Context.prototype.reset = function (type) {
+  this.ctx[type] = {};
 };
 
 

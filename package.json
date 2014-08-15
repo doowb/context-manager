@@ -1,11 +1,11 @@
 {
   "name": "context-manager",
   "description": "Manage context for templates.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/assemble/context-manager",
   "author": {
     "name": "Jon Schlinkert",
-    "url": "https://github.com/assemble"
+    "url": "https://github.com/jonschlinkert"
   },
   "repository": {
     "type": "git",

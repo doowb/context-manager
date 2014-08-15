@@ -99,35 +99,19 @@ Context.prototype.getLevel = function (type) {
 
 
 /**
- * Extend the context.
+ * Extend a context.
  *
  * @api public
  */
 
 Context.prototype.extend = function (type, value) {
-  if(this.ctx.hasOwnProperty(type)) {
-    this.levels[type] === 999;
-    this.ctx[type] === {};
+  if(!this.ctx.hasOwnProperty(type)) {
+    this.levels[type] = 999;
+    this.ctx[type] = value;
+    return this;
   }
 
-  this.ctx[type] = _.extend({}, this.ctx[type], value);
-  return this;
-};
-
-
-/**
- * Extend the context.
- *
- * @api public
- */
-
-Context.prototype.extend = function (type, value) {
-  if(this.ctx.hasOwnProperty(type)) {
-    this.levels[type] === 999;
-    this.ctx[type] === {};
-  }
-
-  this.ctx[type] = _.extend({}, this.ctx[type], value);
+  _.extend(this.ctx[type], value);
   return this;
 };
 
@@ -145,9 +129,9 @@ Context.prototype.calculate = function (keys, fn) {
   }
 
   var obj = sortObj(this.ctx, {keys: keys, fn: fn});
-
   var o = {};
-  _.forIn(obj, function(value, key) {
+
+  _.forIn(obj, function(value) {
     _.extend(o, value);
   });
 
@@ -156,7 +140,7 @@ Context.prototype.calculate = function (keys, fn) {
 
 
 /**
- * Remove a context.
+ * Reset a context level.
  *
  * @api public
  */
@@ -167,7 +151,7 @@ Context.prototype.reset = function (type) {
 
 
 /**
- * Remove a context.
+ * Remove a context level.
  *
  * @api public
  */

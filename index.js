@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-
+var sortObj = require('sort-object');
 
 
 /**
@@ -138,31 +138,18 @@ Context.prototype.extend = function (type, value) {
  * @api public
  */
 
-Context.prototype.sortedKeys = function (o) {
-  var keys = _.keys(o || this.levels);
+Context.prototype.calculate = function (keys, fn) {
+  if (typeof keys === 'function') {
+    fn = keys;
+    keys = this.sortKeys(fn);
+  }
 
-  keys.sort(function(a, b) {
-    return this.levels[a] > this.levels[b];
-  }.bind(this));
-
-  return keys;
-};
-
-
-/**
- * Calculate the context
- *
- * @api public
- */
-
-Context.prototype.calculate = function (keys) {
-  var keys = keys || this.sortedKeys();
+  var obj = sortObj(this.ctx, {keys: keys, fn: fn});
 
   var o = {};
-  keys.forEach(function(key) {
-    var value = this.ctx[key];
+  _.forIn(obj, function(value, key) {
     _.extend(o, value);
-  }.bind(this));
+  });
 
   return o;
 };

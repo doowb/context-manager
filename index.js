@@ -31,7 +31,7 @@ function Context() {
  */
 
 Context.prototype.add = function (type, level, value) {
-  this.levels[type] = level;
+  this.levels[type] = Number(level);
   this.ctx[type] = value || {};
   return this;
 };
@@ -138,8 +138,8 @@ Context.prototype.extend = function (type, value) {
  * @api public
  */
 
-Context.prototype.sortedKeys = function () {
-  var keys = _.keys(this.levels);
+Context.prototype.sortedKeys = function (o) {
+  var keys = _.keys(o || this.levels);
 
   keys.sort(function(a, b) {
     return this.levels[a] > this.levels[b];
@@ -163,6 +163,7 @@ Context.prototype.calculate = function (keys) {
     var value = this.ctx[key];
     _.extend(o, value);
   }.bind(this));
+
   return o;
 };
 
@@ -201,5 +202,12 @@ Context.prototype.clear = function () {
   this.ctx = {};
   return this;
 };
+
+
+/**
+ * Export `Context`
+ *
+ * @type {Object}
+ */
 
 module.exports = Context;

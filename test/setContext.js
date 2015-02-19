@@ -1,8 +1,8 @@
 /*!
- * context-cache <https://github.com/jonschlinkert/context-cache>
+ * context-manager <https://github.com/assemble/context-manager>
  *
- * Copyright (c) 2014 Jon Schlinkert, Brian Woodward, contributors.
- * Licensed under the MIT license.
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT License.
  */
 
 'use strict';
@@ -13,15 +13,15 @@ var context = new Context();
 
 describe('context add', function() {
   beforeEach(function() {
-    context.clear();
+    context.resetContexts();
   });
 
-  describe('.add()', function() {
+  describe('.setContext()', function() {
     it('should add an object to the `ctx` object.', function() {
-      context.add('a', 1);
-      context.add('b', 2);
-      context.add('c', 3);
-      context.add('d', 4);
+      context.setContext('a', 1);
+      context.setContext('b', 2);
+      context.setContext('c', 3);
+      context.setContext('d', 4);
 
       context.ctx.should.have.property('a');
       context.ctx.should.have.property('b');
@@ -32,10 +32,10 @@ describe('context add', function() {
 
     it('should be chainable.', function() {
       context
-        .add('a', 1)
-        .add('b', 2)
-        .add('c', 3)
-        .add('d', 4);
+        .setContext('a', 1)
+        .setContext('b', 2)
+        .setContext('c', 3)
+        .setContext('d', 4);
 
       context.ctx.should.have.property('a');
       context.ctx.should.have.property('b');

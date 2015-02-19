@@ -7,9 +7,8 @@
 
 'use strict';
 
+var merge = require('merge-deep');
 var pad = require('pad-left');
-var sortObj = require('sort-object');
-var filter = require('filter-object');
 
 /**
  * Create an instance of `Context`.
@@ -72,7 +71,7 @@ Context.prototype.extendContext = function (type, key, value) {
     throw new Error('context level "' + type + '" has not been defined.');
   }
   if (arguments.length === 2) {
-    extend(this.ctx[type], key);
+    merge(this.ctx[type], key);
   } else {
     this.ctx[type][key] = value;
   }
@@ -89,7 +88,7 @@ Context.prototype.sortKeys = function (keys, fn) {
   keys = Array.isArray(keys) ? keys : Object.keys(this.ctx);
 
   return keys.sort(fn || function (a, b) {
-    return ~~this.lvl[a] < ~~this.lvl[b];
+    return ~~(+this.lvl[a]) < ~~(+this.lvl[b]);
   }.bind(this));
 };
 
@@ -107,7 +106,7 @@ Context.prototype.calculate = function (keys, fn) {
   var o = {};
 
   keys.forEach(function(key) {
-    extend(o, this.ctx[key]);
+    merge(o, this.ctx[key]);
   }.bind(this));
   return o;
 };

@@ -6,8 +6,6 @@
  */
 
 var Context = require('./');
-var _ = require('lodash');
-
 
 var obj = {
   cache: {

@@ -7,7 +7,7 @@
 
 'use strict';
 
-var should = require('should');
+require('should');
 var Context = require('..');
 var context = new Context();
 

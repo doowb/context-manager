@@ -31,13 +31,13 @@
     "test": "mocha"
   },
   "dependencies": {
-    "pad-left": "^1.0.1"
+    "merge-deep": "^0.1.5",
+    "pad-left": "^1.0.1",
+    "sort-object": "^0.2.0"
   },
   "devDependencies": {
-    "mocha": "*",
-    "should": "^5.0.0",
-    "sort-asc": "^0.1.0",
-    "sort-desc": "^0.1.1"
+    "mocha": "^2.1.0",
+    "should": "^5.0.0"
   },
   "keywords": [
     "context",

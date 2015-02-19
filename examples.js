@@ -1,3 +1,9 @@
+/*!
+ * context-manager <https://github.com/assemble/context-manager>
+ *
+ * Copyright (c) 2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
 
 var Context = require('./');
 var _ = require('lodash');
@@ -27,38 +33,72 @@ var obj = {
 var context = new Context();
 
 
-context
-  .add('global', 10)
-  .add('data', 20)
-  .add('locals', 30)
-  .add('page', 40)
-  .add('partial', 50)
-  .add('layout', 60)
-  .add('matter', 70);
+// context
+//   .setContext('defaults', 120)
+//   .setContext('.create()', 110)
+//   .setContext('.engine() locals', 100)
+//   .setContext('.engine() options', 90)
+//   .setContext('.engine()', 80)
+//   .setContext('page', 70)
+//   .setContext('partial', 60)
+//   .setContext('layout', 50)
+//   .setContext('front matter', 40)
+//   .setContext('template locals', 30)
+//   .setContext('template data', 20)
+//   .setContext('.compile()', 10)
+//   .setContext('.render()', 0)
+
+// context
+//   .extendContext('defaults',          {title: 'defaults'})
+//   .extendContext('.create()',         {title: '.create()'})
+//   .extendContext('.engine() locals',  {title: '.engine() locals'})
+//   .extendContext('.engine() options', {title: '.engine() options'})
+//   .extendContext('.engine()',         {title: '.engine()'})
+//   .extendContext('page',              {title: 'page'})
+//   .extendContext('partial',           {title: 'partial'})
+//   .extendContext('layout',            {title: 'layout'})
+//   .extendContext('front matter',      {title: 'front matter'})
+//   .extendContext('template locals',   {title: 'template locals'})
+//   .extendContext('template data',     {title: 'template data'})
+//   .extendContext('.compile()',        {title: '.compile()'})
+//   .extendContext('.render()',         {title: '.render()'});
 
 
-context.extend('global', {title: 'Global title'});
-context.extend('data', {title: 'Data title'});
-context.extend('locals', {title: 'Locals title'});
-context.extend('matter', {title: 'Matter title'});
-context.extend('layout', {title: 'Layout title'});
+// // console.log(context.get());
+// // console.log(context.calculate());
+
+// // console.log(context.calculate(['defaults', 'data']));
+
+// // console.log(context.sortedKeys());
 
 
-// console.log(context.get());
-// console.log(context.calculate());
-
-// console.log(context.calculate(['global', 'data']));
-
-// console.log(context.sortedKeys());
-
-
-// context.reset('partial');
-// context.extend('partial', {});
+// // context.reset('partial');
+// // context.extendContext('partial', {});
 
 var sortAsc = require('sort-asc');
 var sortDesc = require('sort-desc');
 
-// var c = context.calculate(['global', 'data', 'partial'], {fn: sortDesc});
-var c = context.calculate(['global', 'layout', 'data'], sortAsc);
+// // var c = context.calculate(['defaults', 'data', 'partial'], {fn: sortDesc});
+// // var c = context.calculate(['defaults', 'layout', '.render()'], sortDesc);
+// // var c = context.calculate(['defaults', 'layout', '.render()']);
+// // var c = context.calculate(sortAsc);
+// var c = context.calculate();
 
-console.log(c);
+// console.log(c);
+
+
+context
+  .setContext('a', 1)
+  .setContext('b', 2)
+  .setContext('c', 3)
+  .setContext('d', 4)
+  .setContext('e', 5)
+
+context
+  .extendContext('a', {title: 'a'})
+  .extendContext('b', {title: 'b'})
+  .extendContext('c', {title: 'c'})
+  .extendContext('d', {title: 'd'})
+  .extendContext('e', {title: 'e'});
+
+console.log(context.calculate(['c', 'd', 'e'], sortAsc))

@@ -1,8 +1,15 @@
+/*!
+ * context-manager <https://github.com/assemble/context-manager>
+ *
+ * Copyright (c) 2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
+
 'use strict';
 
-var _ = require('lodash');
+var pad = require('pad-left');
 var sortObj = require('sort-object');
-
+var filter = require('filter-object');
 
 /**
  * Create an instance of `Context`.
@@ -11,38 +18,37 @@ var sortObj = require('sort-object');
  * @api public
  */
 
-function Context() {
+function Context(options) {
+  this.options = options || {};
   this.ctx = {};
-  this.levels = {};
+  this.lvl = {};
 }
-
 
 /**
  * Add a context level, optionally passing
  * a value to start with.
  *
  * ```js
- * context.add('locals', {a: 'b'});
+ * context.setContext('locals', {a: 'b'});
  * ```
  *
  * @param {String} `type` The kind of context to add.
- * @param {Number} `level` Numerical value representing the order in which this level should be merged versus other levels.
- * @param {Object} `value` Optionally pass a starting object.
+ * @param {Number} `level` Numerical value representing the order in which this level should be merged versus other lvl.
+ * @param {Object} `value` Optionally pass an object to start with.
  */
 
-Context.prototype.add = function (type, level, value) {
-  this.levels[type] = Number(level);
+Context.prototype.setContext = function (type, level, value) {
+  this.lvl[type] = formatLevel(level, this.options.padding);
   this.ctx[type] = value || {};
   return this;
 };
-
 
 /**
  * Return the context for `type`.
  *
  * ```js
- * context.set('a', {a: 'b'});
- * context.get('a');
+ * context.setContext('a', {a: 'b'});
+ * context.getContext('a');
  * // => {a: 'b'}
  * ```
  *
@@ -51,116 +57,60 @@ Context.prototype.add = function (type, level, value) {
  * @api public
  */
 
-Context.prototype.get = function (type) {
-  if (!type) {
-    return this.ctx;
-  }
-  return this.ctx[type];
+Context.prototype.getContext = function (type) {
+  return type ? this.ctx[type] : this.ctx;
 };
 
-
 /**
- * Set the level (number) for the specified context `type`.
- *
- * ```js
- * context.set('a', {a: 'b'});
- * context.get('a');
- * // => {a: 'b'}
- * ```
- *
- * @param {String} `type` The context type to get.
- * @return {Number} `num`
- * @api public
- */
-
-Context.prototype.setLevel = function (type, num) {
-  this.levels[type] = num;
-  return this;
-};
-
-
-/**
- * Get the level (number) for the specified context `type`.
- *
- * ```js
- * context.setLevel('a', 1);
- * context.getLevel('a');
- * // => '1'
- * ```
- *
- * @param {String} `type` The context type to get.
- * @return {Number}
- * @api public
- */
-
-Context.prototype.getLevel = function (type) {
-  return this.levels[type];
-};
-
-
-/**
- * Extend a context.
+ * Extend a context with the given `value`
  *
  * @api public
  */
 
-Context.prototype.extend = function (type, value) {
+Context.prototype.extendContext = function (type, key, value) {
   if(!this.ctx.hasOwnProperty(type)) {
-    this.levels[type] = 999;
-    this.ctx[type] = value;
-    return this;
+    throw new Error('context level "' + type + '" has not been defined.');
   }
-
-  _.extend(this.ctx[type], value);
+  if (arguments.length === 2) {
+    extend(this.ctx[type], key);
+  } else {
+    this.ctx[type][key] = value;
+  }
   return this;
 };
 
+/**
+ * Sort the keys in the given object or `lvl`.
+ *
+ * @api public
+ */
+
+Context.prototype.sortKeys = function (keys, fn) {
+  keys = Array.isArray(keys) ? keys : Object.keys(this.ctx);
+
+  return keys.sort(fn || function (a, b) {
+    return ~~this.lvl[a] < ~~this.lvl[b];
+  }.bind(this));
+};
 
 /**
- * Calculate the context
+ * Calculate the context, optionally passing a
+ * callback `fn` for sorting.
  *
+ * @param {String} `keys` Optionally pass an array of keys for context levels to include.
+ * @param {Function} `fn` Callback function for determining the order of merging.
  * @api public
  */
 
 Context.prototype.calculate = function (keys, fn) {
-  if (typeof keys === 'function') {
-    fn = keys;
-    keys = this.sortKeys(fn);
-  }
-
-  var obj = sortObj(this.ctx, {keys: keys, fn: fn});
+  keys = this.sortKeys(keys, fn);
   var o = {};
 
-  _.forIn(obj, function(value) {
-    _.extend(o, value);
-  });
-
+  keys.forEach(function(key) {
+    extend(o, this.ctx[key]);
+  }.bind(this));
   return o;
 };
-
-
-/**
- * Reset a context level.
- *
- * @api public
- */
-
-Context.prototype.reset = function (type) {
-  this.ctx[type] = {};
-};
-
-
-/**
- * Remove a context level.
- *
- * @api public
- */
-
-Context.prototype.remove = function (type) {
-  delete this.levels[type];
-  delete this.ctx[type];
-};
-
 
 /**
  * Clear all contexts.
@@ -168,12 +118,35 @@ Context.prototype.remove = function (type) {
  * @api public
  */
 
-Context.prototype.clear = function () {
-  this.levels = {};
+Context.prototype.resetContexts = function () {
+  this.lvl = {};
   this.ctx = {};
   return this;
 };
 
+/**
+ * Correctly format a level.
+ */
+
+function formatLevel(lvl, amount) {
+  return padding(Math.abs(lvl) >> 0, amount);
+}
+
+/**
+ * Apply padding to a level
+ */
+
+function padding(val, amount) {
+  return pad(val, (amount || 3) - length(val), '0');
+}
+
+/**
+ * Get the string length of `val`
+ */
+
+function length(val) {
+  return val.toString().length;
+}
 
 /**
  * Export `Context`

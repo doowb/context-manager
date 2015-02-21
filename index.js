@@ -1,15 +1,14 @@
 /*!
  * context-manager <https://github.com/assemble/context-manager>
  *
- * Copyright (c) 2015, Jon Schlinkert.
+ * Copyright (c) 2015, Jon Schlinkert, Brian Woodward.
  * Licensed under the MIT License.
  */
 
 'use strict';
 
-var _ = require('lodash');
-var merge = require('merge-deep');
 var pad = require('pad-left');
+var _ = require('lodash');
 
 /**
  * Create an instance of `Context`.
@@ -32,19 +31,20 @@ function Context(options) {
  * context.setContext('locals', {a: 'b'});
  * ```
  *
- * @param {String} `type` The kind of context to add.
+ * @param {String} `name` The name of the context to add.
  * @param {Number} `level` Numerical value representing the order in which this level should be merged versus other lvl.
  * @param {Object} `value` Optionally pass an object to start with.
+ * @api public
  */
 
-Context.prototype.setContext = function (type, level, value) {
-  this.lvl[type] = formatLevel(level, this.options.padding);
-  this.ctx[type] = value || {};
+Context.prototype.setContext = function (name, level, value) {
+  this.ctx[name] = value || {};
+  this.setLevel(name, level);
   return this;
 };
 
 /**
- * Return the context for `type`.
+ * Get the raw (un-merged) context for `name`.
  *
  * ```js
  * context.setContext('a', {a: 'b'});
@@ -52,30 +52,60 @@ Context.prototype.setContext = function (type, level, value) {
  * // => {a: 'b'}
  * ```
  *
- * @param {String} `type` The context type to get.
+ * @param {String} `name` The context to get.
  * @return {*}
  * @api public
  */
 
-Context.prototype.getContext = function (type) {
-  return type ? this.ctx[type] : this.ctx;
+Context.prototype.getContext = function (name) {
+  return name ? this.ctx[name] : this.ctx;
 };
 
 /**
- * Extend a context with the given `value`
+ * Extend context `name` with the given `value`
  *
+ * ```js
+ * context.setContext('locals', {a: 'b'});
+ * ```
+ *
+ * @param  {String} `name`
+ * @param  {String} `key`
+ * @param  {Object} `value`
+ * @return {String}
  * @api public
  */
 
-Context.prototype.extendContext = function (type, key, value) {
-  if(!this.ctx.hasOwnProperty(type)) {
-    throw new Error('context level "' + type + '" has not been defined.');
+Context.prototype.extendContext = function (name, key, value) {
+  if(!this.ctx.hasOwnProperty(name)) {
+    throw new Error('[context-manager] context level "' + name + '" does not exist.');
   }
   if (arguments.length === 2) {
-    _.merge(this.ctx[type], key);
+    _.merge(this.ctx[name], key);
   } else {
-    this.ctx[type][key] = value;
+    this.ctx[name][key] = value;
   }
+  return this;
+};
+
+/**
+ * Set the level for a context. This determines the order in which
+ * the context will be merged when `.calculate()` is called.
+ *
+ * ```js
+ * if (foo) {
+ *   context.setLevel('locals', 10);
+ * } else {
+ *   context.setLevel('locals', 0);
+ * }
+ * ```
+ *
+ * @param {String} `name` The name of the context.
+ * @param {Number} `level` The level (number) to set for the level.
+ * @api public
+ */
+
+Context.prototype.setLevel = function (name, level) {
+  this.lvl[name] = formatLevel(level, this.options.padding);
   return this;
 };
 
@@ -90,22 +120,32 @@ Context.prototype.sortKeys = function (keys, fn) {
     return typeof fn === 'function' ? keys.sort(fn) : keys;
   }
   return Object.keys(this.ctx).sort(fn || function (a, b) {
-    return ~~(+this.lvl[a]) - ~~(+this.lvl[b]);
+    return ~~this.lvl[a] - ~~this.lvl[b];
   }.bind(this));
 };
 
 /**
- * Calculate the context, optionally passing a
- * callback `fn` for sorting.
+ * Calculate the context, optionally passing a callback `fn` for sorting.
+ * _(Note that sorting must be done on levels, not on the context names)_.
  *
- * @param {String} `keys` Optionally pass an array of keys for context levels to include.
- * @param {Function} `fn` Callback function for determining the order of merging.
+ * ```js
+ * app.calculate(['a', 'b'], function(a, b) {
+ *   return app.lvl[a] - app.lvl[a];
+ * });
+ * ```
+ *
+ * @param {String|Array} `keys` Key, or array of keys for context levels to include.
+ * @param {Function} `fn` Sort function for determining the order of merging.
  * @api public
  */
 
 Context.prototype.calculate = function (keys, fn) {
   if (typeof keys === 'function') {
     fn = keys; keys = null;
+  }
+
+  if (typeof keys === 'string') {
+    keys = [keys];
   }
 
   keys = this.sortKeys(keys, fn);

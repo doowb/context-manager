@@ -1,7 +1,7 @@
 /*!
  * context-manager <https://github.com/assemble/context-manager>
  *
- * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Copyright (c) 2015, Jon Schlinkert, Brian Woodward.
  * Licensed under the MIT License.
  */
 
@@ -97,10 +97,8 @@ context
   .extendContext('d', {title: 'd'})
   .extendContext('e', {title: 'e'});
 
-var sortAsc = require('sort-asc');
-var sortDesc = require('sort-desc');
-
-// var ctx = context.calculate(sortAsc);
-var ctx = context.getContext();
+var ctx = context.calculate(function (a, b) {
+  return context.ctx[a] - context.ctx[b];
+});
 
 console.log(ctx)

@@ -60,6 +60,10 @@ describe('.extendContext()', function() {
 
     it('should create the object if it does not already exist.', function() {
       context
+        .setContext('j', 1)
+        .setContext('l', 2)
+
+      context
         .extendContext('j', {aaa: 'aaa'})
         .extendContext('j', {bbb: 'bbb'})
 

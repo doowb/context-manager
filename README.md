@@ -15,16 +15,28 @@ var context = require('context-manager');
 ```
 
 ## API
-### [Context](index.js#L21)
+### [Context](index.js#L20)
 
 
 Create an instance of `Context`.
 
+### [.setContext](index.js#L40)
+
+Add a context level, optionally passing a value to start with.
+
+* `name` **{String}**: The name of the context to add.    
+* `level` **{Number}**: Numerical value representing the order in which this level should be merged versus other lvl.    
+* `value` **{Object}**: Optionally pass an object to start with.    
+
+```js
+context.setContext('locals', {a: 'b'});
+```
+
 ### [.getContext](index.js#L60)
 
-Return the context for `type`.
+Get the raw (un-merged) context for `name`.
 
-* `type` **{String}**: The context type to get.    
+* `name` **{String}**: The context to get.    
 * `returns`: {*}  
 
 ```js
@@ -33,20 +45,48 @@ context.getContext('a');
 // => {a: 'b'}
 ```
 
-### [.extendContext](index.js#L70)
+### [.extendContext](index.js#L78)
 
+Extend context `name` with the given `value`
 
-Extend a context with the given `value`
+* `name` **{String}**    
+* `key` **{String}**    
+* `value` **{Object}**    
+* `returns`: {String}  
 
-### [.calculate](index.js#L106)
+```js
+context.setContext('locals', {a: 'b'});
+```
 
-* `keys` **{String}**: Optionally pass an array of keys for context levels to include.    
-* `fn` **{Function}**: Callback function for determining the order of merging.    
+### [.setLevel](index.js#L107)
 
-Calculate the context, optionally passing a
-callback `fn` for sorting.
+Set the level for a context. This determines the order in which the context will be merged when `.calculate()` is called.
 
-### [.resetContexts](index.js#L126)
+* `name` **{String}**: The name of the context.    
+* `level` **{Number}**: The level (number) to set for the level.    
+
+```js
+if (foo) {
+  context.setLevel('locals', 10);
+} else {
+  context.setLevel('locals', 0);
+}
+```
+
+### [.calculate](index.js#L142)
+
+Calculate the context, optionally passing a callback `fn` for sorting. _(Note that sorting must be done on levels, not on the context names)_.
+
+* `keys` **{String|Array}**: Key, or array of keys for context levels to include.    
+* `fn` **{Function}**: Sort function for determining the order of merging.    
+
+```js
+app.calculate(['a', 'b'], function(a, b) {
+  return app.lvl[a] - app.lvl[a];
+});
+```
+
+### [.resetContexts](index.js#L166)
 
 
 Clear all contexts.

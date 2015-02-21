@@ -7,19 +7,11 @@
     "name": "Jon Schlinkert",
     "url": "https://github.com/jonschlinkert"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/assemble/context-manager.git"
-  },
+  "repository": "assemble/context-manager",
   "bugs": {
     "url": "https://github.com/assemble/context-manager/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/assemble/context-manager/blob/master/LICENSE"
-    }
-  ],
+  "license": "MIT",
   "files": [
     "index.js"
   ],
@@ -31,13 +23,16 @@
     "test": "mocha"
   },
   "dependencies": {
+    "lodash": "^3.2.0",
     "merge-deep": "^0.1.5",
     "pad-left": "^1.0.1",
     "sort-object": "^0.2.0"
   },
   "devDependencies": {
     "mocha": "^2.1.0",
-    "should": "^5.0.0"
+    "should": "^5.0.0",
+    "sort-asc": "^0.1.0",
+    "sort-desc": "^0.1.1"
   },
   "keywords": [
     "context",

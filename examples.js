@@ -1,7 +1,7 @@
 /*!
  * context-manager <https://github.com/assemble/context-manager>
  *
- * Copyright (c) 2015, Jon Schlinkert.
+ * Copyright (c) 2014-2015, Jon Schlinkert.
  * Licensed under the MIT License.
  */
 
@@ -73,8 +73,6 @@ var context = new Context();
 // // context.reset('partial');
 // // context.extendContext('partial', {});
 
-var sortAsc = require('sort-asc');
-var sortDesc = require('sort-desc');
 
 // // var c = context.calculate(['defaults', 'data', 'partial'], {fn: sortDesc});
 // // var c = context.calculate(['defaults', 'layout', '.render()'], sortDesc);
@@ -99,4 +97,10 @@ context
   .extendContext('d', {title: 'd'})
   .extendContext('e', {title: 'e'});
 
-console.log(context.calculate(['c', 'd', 'e'], sortAsc))
+var sortAsc = require('sort-asc');
+var sortDesc = require('sort-desc');
+
+// var ctx = context.calculate(sortAsc);
+var ctx = context.getContext();
+
+console.log(ctx)

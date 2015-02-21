@@ -7,6 +7,7 @@
 
 'use strict';
 
+var _ = require('lodash');
 var merge = require('merge-deep');
 var pad = require('pad-left');
 
@@ -71,7 +72,7 @@ Context.prototype.extendContext = function (type, key, value) {
     throw new Error('context level "' + type + '" has not been defined.');
   }
   if (arguments.length === 2) {
-    merge(this.ctx[type], key);
+    _.merge(this.ctx[type], key);
   } else {
     this.ctx[type][key] = value;
   }
@@ -81,14 +82,15 @@ Context.prototype.extendContext = function (type, key, value) {
 /**
  * Sort the keys in the given object or `lvl`.
  *
- * @api public
+ * @api private
  */
 
 Context.prototype.sortKeys = function (keys, fn) {
-  keys = Array.isArray(keys) ? keys : Object.keys(this.ctx);
-
-  return keys.sort(fn || function (a, b) {
-    return ~~(+this.lvl[a]) < ~~(+this.lvl[b]);
+  if (Array.isArray(keys)) {
+    return typeof fn === 'function' ? keys.sort(fn) : keys;
+  }
+  return Object.keys(this.ctx).sort(fn || function (a, b) {
+    return ~~(+this.lvl[a]) - ~~(+this.lvl[b]);
   }.bind(this));
 };
 
@@ -102,11 +104,15 @@ Context.prototype.sortKeys = function (keys, fn) {
  */
 
 Context.prototype.calculate = function (keys, fn) {
+  if (typeof keys === 'function') {
+    fn = keys; keys = null;
+  }
+
   keys = this.sortKeys(keys, fn);
   var o = {};
 
   keys.forEach(function(key) {
-    merge(o, this.ctx[key]);
+    _.merge(o, this.ctx[key]);
   }.bind(this));
   return o;
 };
